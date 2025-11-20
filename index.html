@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabies Case Database</title>
+    <style>
+        /* Styling for the button */
+        .show-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .show-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling for the table - initially hidden */
+        #database-table {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #database-table th, #database-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            cursor: pointer; /* Change cursor to indicate editability */
+        }
+
+        #database-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #database-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #database-table tr:hover {
+            background-color: #ddd;
+        }
+
+        /* Form styling */
+        .form-container {
+            margin: 20px auto;
+            width: 80%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container input, .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 80%; margin: 50px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h1 style="text-align: center; margin-bottom: 20px;">Rabies Case Database</h1>
+        
+        <!-- Button to show the database -->
+        <button class="show-button" onclick="toggleDatabase()">Show Database</button>
+        
+        <!-- Form to add new case -->
+        <div class="form-container">
+            <h2>Add New Case</h2>
+            <form id="caseForm" onsubmit="addCase(event)">
+                <input type="text" id="patient_id" placeholder="Patient ID" required>
+                <input type="text" id="sex" placeholder="Sex" required>
+                <input type="text" id="age" placeholder="Age" required>
+                <input type="text" id="previous_bite_history" placeholder="Previous Bite History" required>
+                <input type="text" id="source_of_bite" placeholder="Source of Bite" required>
+                <input type="text" id="nature_of_wound" placeholder="Nature of Wound" required>
+                <input type="text" id="bodily_location" placeholder="Bodily Location" required>
+                <input type="text" id="timeline_of_consultation" placeholder="Timeline of Consultation" required>
+                <textarea id="vaccine_doses_completed" placeholder="Vaccine Doses Completed" required></textarea>
+                <textarea id="remarks" placeholder="Remarks" required></textarea>
+                <button type="submit">Add Case</button>
+            </form>
+        </div>
+        
+        <!-- Database Table (Initially Hidden) -->
+        <table id="database-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Patient ID</th>
+                    <th onclick="sortTable(1)">Sex</th>
+                    <th onclick="sortTable(2)">Age</th>
+                    <th onclick="sortTable(3)">Previous Bite History</th>
+                    <th onclick="sortTable(4)">Source of Bite</th>
+                    <th onclick="sortTable(5)">Nature of Wound</th>
+                    <th onclick="sortTable(6)">Bodily Location</th>
+                    <th onclick="sortTable(7)">Timeline of Consultation</th>
+                    <th onclick="sortTable(8)">Vaccine Doses Completed</th>
+                    <th onclick="sortTable(9)">Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="cases-list">
+                <!-- Case rows will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- JavaScript to handle showing the database, adding cases, editing cells, and sorting the table -->
+    <script>
+        let casesData = [];
+
+        // Function to toggle the visibility of the database
+        function toggleDatabase() {
+            const table = document.getElementById('database-table');
+            if (table.style.display === 'none') {
+                table.style.display = 'table'; // Show the table
+                setTimeout(() => {
+                    table.style.opacity = 1;
+                    table.style.transform = 'translateY(0)';
+                }, 50); // Fade-in effect + slide from top
+            } else {
+                table.style.opacity = 0;
+                table.style.transform = 'translateY(-20px)';
+                setTimeout(() => table.style.display = 'none', 500); // After fade-out, hide the table
+            }
+        }
+
+        // Function to add a new case to the database
+        function addCase(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Collect form data
+            const newCase = {
+                patient_id: document.getElementById('patient_id').value,
+                sex: document.getElementById('sex').value,
+                age: document.getElementById('age').value,
+                previous_bite_history: document.getElementById('previous_bite_history').value,
+                source_of_bite: document.getElementById('source_of_bite').value,
+                nature_of_wound: document.getElementById('nature_of_wound').value,
+                bodily_location: document.getElementById('bodily_location').value,
+                timeline_of_consultation: document.getElementById('timeline_of_consultation').value,
+                vaccine_doses_completed: document.getElementById('vaccine_doses_completed').value,
+                remarks: document.getElementById('remarks').value,
+            };
+
+            // Add the new case to the array
+            casesData.push(newCase);
+
+            // Update the table with the new case
+            updateTable();
+
+            // Clear the form inputs
+            document.getElementById('caseForm').reset();
+        }
+
+        // Function to update the table with new data
+        function updateTable() {
+            const tableBody = document.getElementById('cases-list');
+            tableBody.innerHTML = ''; // Clear the current table rows
+
+            casesData.forEach((caseData, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td contenteditable="true" onblur="updateCase(${index}, 'patient_id', this.innerText)">${caseData.patient_id}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'sex', this.innerText)">${caseData.sex}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'age', this.innerText)">${caseData.age}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'previous_bite_history', this.innerText)">${caseData.previous_bite_history}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'source_of_bite', this.innerText)">${caseData.source_of_bite}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'nature_of_wound', this.innerText)">${caseData.nature_of_wound}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'bodily_location', this.innerText)">${caseData.bodily_location}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'timeline_of_consultation', this.innerText)">${caseData.timeline_of_consultation}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'vaccine_doses_completed', this.innerText)">${caseData.vaccine_doses_completed}</td>
+                    <td contenteditable="true" onblur="updateCase(${index}, 'remarks', this.innerText)">${caseData.remarks}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to update the case data when a cell is edited
+        function updateCase(index, field, newValue) {
+            casesData[index][field] = newValue;
+        }
+
+        // Function to sort the table by column index
+        function sortTable(columnIndex) {
+            const rows = Array.from(document.getElementById('cases-list').rows);
+            const sortedRows = rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent.trim();
+                const bText = b.cells[columnIndex].textContent.trim();
+
+                return aText > bText ? 1 : (aText < bText ? -1 : 0);
+            });
+
+            // Append the sorted rows back to the table body
+            sortedRows.forEach(row => document.getElementById('cases-list').appendChild(row));
+        }
+    </script>
+</body>
+</html>
